@@ -1,7 +1,8 @@
 import { Vegkategori, Vegstatus } from './vegreferanseEnums';
+import {calculateCustomRelativePosition} from "./calculatePosition.ts";
 
-const url = "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/532";
 
+const baseUrl = "https://nvdbapiles.atlas.vegvesen.no"
 
 class Vegreferanse {
     vegkategori: Vegkategori;
@@ -32,6 +33,7 @@ class Vegreferanse {
 export const fetchHistoricVegreferanse = async (vegreferanse: String): Promise<any> => {
 
     const vegref = new Vegreferanse(vegreferanse);
+    const url = baseUrl + "/vegobjekter/532";
 
     const params = new URLSearchParams({
         segmentering: "true",
@@ -45,6 +47,35 @@ export const fetchHistoricVegreferanse = async (vegreferanse: String): Promise<a
             + `AND(4571<${vegref.meter})AND(4572>${vegref.meter})`
             + `AND(4591=${vegref.fylke})`
             + `AND(4592=${vegref.kommune})`
+    });
+
+    console.log(`Fetching vegreferanse vegobjekter for URL: ${url}?${params}`);
+    try {
+        const response = await fetch(`${url}?${params.toString()}`, {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        console.error("Error fetching vegobjekter:", error);
+        throw error;
+    }
+};
+
+export const fetchVegsystemReferanse = async (veglenkesekvensid: number, position: number): Promise<any> => {
+
+    const url = baseUrl + "/vegnett/api/v4/veg";
+
+    const params = new URLSearchParams({
+        veglenkesekvens: `${position}@${veglenkesekvensid}`
     });
 
     console.log(`Fetching vegreferanse vegobjekter for URL: ${url}?${params}`);

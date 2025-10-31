@@ -1,24 +1,33 @@
-import { fetchHistoricVegreferanse } from "./nvdbClient";
+import { fetchHistoricVegreferanse, fetchVegsystemReferanse } from "./nvdbClient";
+import {calculateCustomRelativePosition} from "./calculatePosition.ts";
+
+function finnRelativPosisjon(vegrefElement, currentMeter: number = 150) {
+    const fraMeter = vegrefElement.egenskaper.find((egenskap: any) => egenskap.id === 4571).verdi;
+    const tilMeter = vegrefElement.egenskaper.find((egenskap: any) => egenskap.id === 4572).verdi;
+    const lokasjon = vegrefElement.lokasjon.stedfestinger[0];
+    const position = calculateCustomRelativePosition(
+        fraMeter,
+        tilMeter,
+        lokasjon.startposisjon,
+        lokasjon.sluttposisjon,
+        currentMeter);
+
+    return {position, lokasjon, currentMeter};
+}
+
 
 const run = async () => {
     try {
         // const data = await fetchHistoricVegreferanse("5000ev6hp18m100");
         const data = await fetchHistoricVegreferanse("0700ev18hp6m100");
 
-        if (data.objekter.length === 1) {
-            data.objekter[0].egenskaper.forEach((egenskap: any) => {
-                console.log(`Egenskap id: ${egenskap.id}, Navn ${egenskap.navn}, Verdi: ${egenskap.verdi}`);
-            });
-            const fraMeter = data.objekter[0].egenskaper.find((egenskap: any) => egenskap.id === 4571).verdi;
-            const tilMeter = data.objekter[0].egenskaper.find((egenskap: any) => egenskap.id === 4572).verdi;
-            const lokasjon = data.objekter[0].lokasjon.stedfestinger[0];
-            console.log("start posisjon: lokasjon.startposisjon:", lokasjon.startposisjon);
-            console.log("slutt posisjon: lokasjon.sluttposisjon:", lokasjon.sluttposisjon);
-            console.log("frameter: ", fraMeter);
-            console.log("tilmeter: ", tilMeter);
-        }
+        let objekterElement = data.objekter[0];
+        let relativPosisjon = finnRelativPosisjon(objekterElement, 200);
+        console.log(relativPosisjon.position + "@" + relativPosisjon.lokasjon.veglenkesekvensid);
 
-        console.log("Vegobjekter:", data);
+        let vegsystemReferanse = await fetchVegsystemReferanse(relativPosisjon.lokasjon.veglenkesekvensid, relativPosisjon.position);
+        console.log("Vegsystem referanse:", vegsystemReferanse);
+
     } catch (error) {
         console.error("Noe gikk galt:", error);
     }
