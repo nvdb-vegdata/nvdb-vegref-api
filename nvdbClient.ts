@@ -1,100 +1,74 @@
-import { Vegkategori, Vegstatus } from './vegreferanseEnums';
-import {calculateCustomRelativePosition} from "./calculatePosition.ts";
+import {Vegreferanse} from "./Vegreferanse.ts";
+import type {Posisjon, VegobjektResponse} from "./nvdbTypes.ts";
 
+// const baseUrl = "https://nvdbapiles.utv.atlas.vegvesen.no"
+const baseUrl = "http://localhost:8080";
 
-const baseUrl = "https://nvdbapiles.atlas.vegvesen.no"
-
-class Vegreferanse {
-    vegkategori: Vegkategori;
-    vegstatus: Vegstatus;
-    vegnummer: number;
-    fylke: number;
-    kommune: number;
-    parsell: number;  /* 1-49 (hovedparsell), 50-69 (Armer), 70-199 (Ramper), 400-599 (Rundkjøringer),
-                         600-699 (Skjøteparsell), 800-998 (Trafikklommer, rasteplasser) */
-    meter: number;
-
-    constructor(vegreferanse: String) {
-        const vegrefMatch = vegreferanse.match(/^(\d{4})([a-zA-Z])([a-zA-Z])(\d+)hp(\d+)m(\d+)$/);
-        if (vegrefMatch === null) {
-            throw new Error(`Unknown vegref match: ${vegreferanse}`);
-        }
-        this.fylke = Number(vegrefMatch[1].substring(0, 2));
-        this.kommune = Number(vegrefMatch[1].substring(2, 4));
-        this.vegkategori = Vegkategori[vegrefMatch[2].toUpperCase() as keyof typeof Vegkategori];
-        this.vegstatus = Vegstatus[vegrefMatch[3].toUpperCase() as keyof typeof Vegstatus];
-        this.vegnummer = Number(vegrefMatch[4]);
-        this.parsell = Number(vegrefMatch[5]);
-        this.meter = Number(vegrefMatch[6]);
-    }
-}
-
-
-export const fetchHistoricVegreferanse = async (vegreferanse: String): Promise<any> => {
-
-    const vegref = new Vegreferanse(vegreferanse);
+export const fetchHistoricVegreferanse = async (vegreferanse: Vegreferanse, tidspunkt?: Date): Promise<VegobjektResponse> => {
     const url = baseUrl + "/vegobjekter/532";
 
     const params = new URLSearchParams({
         segmentering: "true",
-        tidspunkt: "2010-01-01",
         inkluder: "egenskaper,lokasjon",
+        ...(tidspunkt
+            ? {tidspunkt: tidspunkt.toISOString().slice(0, 10)}
+            : {alle_versjoner: "true"}),
         egenskap:
-            `(4566=${vegref.vegkategori})`
-            + `AND(4567=${vegref.vegstatus})`
-            + `AND(4568=${vegref.vegnummer})`
-            + `AND(4569=${vegref.parsell})`
-            + `AND(4571<${vegref.meter})AND(4572>${vegref.meter})`
-            + `AND(4591=${vegref.fylke})`
-            + `AND(4592=${vegref.kommune})`
+            `(4566=${vegreferanse.vegkategori})`
+            + `AND(4567=${vegreferanse.vegstatus})`
+            + `AND(4568=${vegreferanse.vegnummer})`
+            + `AND(4569=${vegreferanse.parsell})`
+            + `AND(4571<${vegreferanse.meter + 1})`
+            + `AND(4572>${vegreferanse.meter - 1})`
+            + `AND(4591=${vegreferanse.fylke})`
+            + `AND(4592=${vegreferanse.kommune})`
     });
 
     console.log(`Fetching vegreferanse vegobjekter for URL: ${url}?${params}`);
-    try {
-        const response = await fetch(`${url}?${params.toString()}`, {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+    const response = await fetch(`${url}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json"
         }
+    });
 
-        return await response.json();
-
-    } catch (error) {
-        console.error("Error fetching vegobjekter:", error);
-        throw error;
+    if (!response.ok) {
+        console.log("Response not ok:", response.status, response.statusText);
+        return {
+            objekter: [],
+            metadata: {
+                antallTreffTotalt: 0,
+                antallTreffPerSide: 0,
+                side: 0,
+                antallSider: 0
+            },
+        } as VegobjektResponse;
     }
+
+    return await response.json() as VegobjektResponse;
 };
 
-export const fetchVegsystemReferanse = async (veglenkesekvensid: number, position: number): Promise<any> => {
+export const fetchVegsystemReferanse = async (veglenkesekvensid: number, position: number): Promise<Posisjon | null> => {
 
-    const url = baseUrl + "/vegnett/api/v4/veg";
+    const url = baseUrl + "/veg";
 
     const params = new URLSearchParams({
         veglenkesekvens: `${position}@${veglenkesekvensid}`
     });
 
     console.log(`Fetching vegreferanse vegobjekter for URL: ${url}?${params}`);
-    try {
-        const response = await fetch(`${url}?${params.toString()}`, {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+    const response = await fetch(`${url}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json"
         }
+    });
 
-        return await response.json();
-
-    } catch (error) {
-        console.error("Error fetching vegobjekter:", error);
-        throw error;
+    if (!response.ok) {
+        console.log("Response not ok:", response.status, response.statusText);
+        return null;
     }
+    return await response.json() as Posisjon;
 };
