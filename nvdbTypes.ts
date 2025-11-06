@@ -46,12 +46,21 @@ export type Posisjon = {
     kommune: number;
 }
 
+
+export type Stedfesting = {
+    type: String;
+    veglenkesekvensid: number;
+    startposisjon: number;
+    sluttposisjon: number;
+    retning: String;
+};
+
 export type Lokasjon = {
     kommuner: number[];
     fylker: number[];
     geometri: Geometri;
     vegsystemreferanser: Vegsystemreferanse[];
-    stedfestinger: any[]; // Kan spesifiseres mer hvis ønskelig
+    stedfestinger: Stedfesting[];
 };
 
 export type Vegobjekt = {

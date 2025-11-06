@@ -2,14 +2,15 @@ import type {Vegobjekt} from "./nvdbTypes.ts";
 import {Vegkategori, Vegstatus} from "./vegreferanseEnums.ts";
 
 export class MapperClass {
-    static toVegreferanse(vegobjekt: Vegobjekt) {
+    static toVegreferanse(vegobjekt: Vegobjekt) : String {
         const vegkategori = vegobjekt.egenskaper.find(e => e.id === 4566);
         const vegstatus = vegobjekt.egenskaper.find(e => e.id === 4567);
         const vegnummer = vegobjekt.egenskaper.find(e => e.id === 4568);
         const parsell = vegobjekt.egenskaper.find(e => e.id === 4569);
         const fylke = vegobjekt.egenskaper.find(e => e.id === 4591);
         const kommune = vegobjekt.egenskaper.find(e => e.id === 4592);
-        const meter = vegobjekt.egenskaper.find(e => e.id === 4571);
+        const meterStart = vegobjekt.egenskaper.find(e => e.id === 4571);
+        const meterEnd = vegobjekt.egenskaper.find(e => e.id === 4572);
 
 
         return ""
@@ -18,6 +19,6 @@ export class MapperClass {
             + (vegkategori?.enum_id === undefined ? "" : Vegkategori[vegkategori.enum_id])
             + (vegstatus?.enum_id === undefined ? "" : Vegstatus[vegstatus.enum_id])
             + vegnummer?.verdi
-            + " hp" + parsell?.verdi + " m" + meter?.verdi;
+            + " hp" + parsell?.verdi + " m" + meterStart?.verdi + " - " + meterEnd?.verdi;
     }
 }

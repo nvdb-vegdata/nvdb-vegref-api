@@ -24,7 +24,7 @@ export const fetchHistoricVegreferanse = async (vegreferanse: Vegreferanse, tids
             + `AND(4592=${vegreferanse.kommune})`
     });
 
-    console.log(`Fetching vegreferanse vegobjekter for URL: ${url}?${params}`);
+    console.log(`Fetching historic road object (typeid=532) from: ${url}?${params}`);
 
     const response = await fetch(`${url}?${params.toString()}`, {
         method: "GET",
@@ -49,7 +49,7 @@ export const fetchHistoricVegreferanse = async (vegreferanse: Vegreferanse, tids
     return await response.json() as VegobjektResponse;
 };
 
-export const fetchVegsystemReferanse = async (veglenkesekvensid: number, position: number): Promise<Posisjon | null> => {
+export const fetchVegsystemReferanse = async (veglenkesekvensid: number, position: number) => {
 
     const url = baseUrl + "/veg";
 
@@ -57,7 +57,7 @@ export const fetchVegsystemReferanse = async (veglenkesekvensid: number, positio
         veglenkesekvens: `${position}@${veglenkesekvensid}`
     });
 
-    console.log(`Fetching vegreferanse vegobjekter for URL: ${url}?${params}`);
+    console.log(`Fetching current road position (vegsystemreferanse) from: ${url}?${params}`);
 
     const response = await fetch(`${url}?${params.toString()}`, {
         method: "GET",
@@ -68,7 +68,7 @@ export const fetchVegsystemReferanse = async (veglenkesekvensid: number, positio
 
     if (!response.ok) {
         console.log("Response not ok:", response.status, response.statusText);
-        return null;
+        return undefined;
     }
     return await response.json() as Posisjon;
 };
