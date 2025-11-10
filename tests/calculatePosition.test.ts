@@ -1,5 +1,5 @@
 import {expect, test} from 'bun:test';
-import {calculateCustomRelativePosition} from './calculatePosition';
+import {calculateCustomRelativePosition} from '../src/calculatePosition.ts';
 
 
 test('should correctly map the start meter to the relative start position', () => {

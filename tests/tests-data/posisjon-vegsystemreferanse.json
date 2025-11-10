@@ -1,0 +1,29 @@
+{
+  "vegsystemreferanse": {
+    "vegsystem": {
+      "vegkategori": "E",
+      "fase": "V",
+      "nummer": 18
+    },
+    "strekning": {
+      "strekning": 28,
+      "delstrekning": 1,
+      "arm": false,
+      "adskilte_løp": "Nei",
+      "trafikantgruppe": "K",
+      "retning": "MOT",
+      "meter": 10043.181
+    },
+    "kortform": "EV18 S28D1 m10043"
+  },
+  "veglenkesekvens": {
+    "veglenkesekvensid": 2014346,
+    "relativPosisjon": 0.1074691,
+    "kortform": "0.1074691@2014346"
+  },
+  "geometri": {
+    "wkt": "POINT Z (204910.091 6560345.922 98.071)",
+    "srid": 5973
+  },
+  "kommune": 4001
+}

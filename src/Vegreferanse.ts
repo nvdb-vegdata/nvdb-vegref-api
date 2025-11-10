@@ -1,4 +1,4 @@
-import { Vegkategori, Vegstatus } from './vegreferanseEnums';
+import { Vegkategori, Vegstatus } from './vegreferanseEnums.ts';
 
 export class Vegreferanse {
     vegkategori: Vegkategori;

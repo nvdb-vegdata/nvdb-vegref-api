@@ -1,4 +1,4 @@
-import {fetchHistoricVegreferanse, fetchVegsystemReferanse} from "./nvdbClient";
+import {fetchHistoricVegreferanse, fetchVegsystemReferanse} from "./nvdbClient.ts";
 import {MapperClass} from "./MapperClass.ts";
 import {Vegreferanse} from "./Vegreferanse.ts";
 import {finnRelativPosisjon} from "./finnRelativPosisjon.ts";
