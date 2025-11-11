@@ -1,4 +1,8 @@
-import {fetchHistoricVegreferanse, fetchVegsystemReferanse} from "./nvdbClient.ts";
+import {
+    fetchHistoricVegreferanse,
+    fetchHistoricVegreferanseFromPosition,
+    fetchVegsystemReferanse
+} from "./nvdbClient.ts";
 import {MapperClass} from "./MapperClass.ts";
 import {Vegreferanse} from "./Vegreferanse.ts";
 import {finnRelativPosisjon} from "./finnRelativPosisjon.ts";
@@ -21,6 +25,19 @@ const run = async () => {
             } else {
                 console.log("Vegreferanse: " + MapperClass.toVegreferanse(objekt)
                  + "   Posisjon:", posisjon.veglenkesekvens.kortform + "   " +  posisjon.vegsystemreferanse.kortform);
+                let vegobjektResponsePromise = await fetchHistoricVegreferanseFromPosition(posisjon.veglenkesekvens.veglenkesekvensid,
+                    posisjon.veglenkesekvens.relativPosisjon);
+
+                vegobjektResponsePromise.objekter?.forEach(
+                    obj => {
+                        let vegref = MapperClass.toVegreferanse(obj);
+                        console.log(`  Vegreferanse for objekt id ${obj.id}`
+                            + ` startdato: ${obj.metadata.startdato} `
+                            + ` sluttdato: ${obj.metadata.sluttdato} `
+                            + ` er: ${vegref} `);
+                    }
+                )
+                console.log("Vegreferanse: " + vegobjektResponsePromise);
             }
         }
 

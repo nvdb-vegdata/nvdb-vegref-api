@@ -63,9 +63,16 @@ export type Lokasjon = {
     stedfestinger: Stedfesting[];
 };
 
+export type VegobjektMetadata = {
+    versjon: number;
+    startdato: string;
+    sluttdato: string | null;
+}
+
 export type Vegobjekt = {
     id: number;
     href: string;
+    metadata: VegobjektMetadata;
     egenskaper: Egenskap[];
     lokasjon: Lokasjon;
 };

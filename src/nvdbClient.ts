@@ -72,3 +72,56 @@ export const fetchVegsystemReferanse = async (veglenkesekvensid: number, positio
     }
     return await response.json() as Posisjon;
 };
+
+
+export const fetchPosisjon = async (vegsystemreferanse: String) => {
+
+    const url = baseUrl + "/veg";
+
+    const params = new URLSearchParams({
+        vegsystemreferanse: `${vegsystemreferanse}`
+    });
+
+    console.log(`Fetching current road position (vegsystemreferanse) from: ${url}?${params}`);
+
+    const response = await fetch(`${url}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        console.log("Response not ok:", response.status, response.statusText);
+        return undefined;
+    }
+    return await response.json() as Posisjon;
+};
+
+
+export const fetchHistoricVegreferanseFromPosition = async (veglenksekvensId : number, posisjon: number, tidspunkt?: Date) : Promise<VegobjektResponse> => {
+    const url = baseUrl + "/vegobjekter/532";
+
+    const params = new URLSearchParams({
+        segmentering: "true",
+        inkluder: "egenskaper,lokasjon,metadata",
+        veglenkesekvens: `${posisjon}@${veglenksekvensId}`,
+        ...(tidspunkt
+            ? {tidspunkt: tidspunkt.toISOString().slice(0, 10)}
+            : {alle_versjoner: "true"})
+    });
+
+    console.log(`Fetching historic road object (typeid=532) from: ${url}?${params} for veglenkesekvensId=${veglenksekvensId} at posisjon=${posisjon}`);
+
+    const response = await fetch(`${url}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        console.log("Response not ok:", response.status, response.statusText);
+    }
+    return await response.json() as VegobjektResponse;
+}
