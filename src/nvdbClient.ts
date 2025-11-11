@@ -1,8 +1,10 @@
-import {Vegreferanse} from "./Vegreferanse.ts";
+import {Vegreferanse} from "./vegreferanse.ts";
 import type {Posisjon, VegobjektResponse} from "./nvdbTypes.ts";
 
-// const baseUrl = "https://nvdbapiles.utv.atlas.vegvesen.no"
-const baseUrl = "http://localhost:8080";
+// const baseUrl = "https://nvdbapiles.utv.atlas.vegvesen.no";        // UTV
+// const baseUrl = "https://nvdbapiles.test.atlas.vegvesen.no";       // ATM
+// const baseUrl = "https://nvdbapiles.atlas.vegvesen.no";            // PROD
+const baseUrl = "http://localhost:8080";                           // LOCAL
 
 export const fetchHistoricVegreferanse = async (vegreferanse: Vegreferanse, tidspunkt?: Date): Promise<VegobjektResponse> => {
     const url = baseUrl + "/vegobjekter/532";
@@ -74,7 +76,7 @@ export const fetchVegsystemReferanse = async (veglenkesekvensid: number, positio
 };
 
 
-export const fetchPosisjon = async (vegsystemreferanse: String) => {
+export const fetchPosisjonByVegsystemreferanse = async (vegsystemreferanse: String) : Promise<Posisjon> => {
 
     const url = baseUrl + "/veg";
 
@@ -93,13 +95,38 @@ export const fetchPosisjon = async (vegsystemreferanse: String) => {
 
     if (!response.ok) {
         console.log("Response not ok:", response.status, response.statusText);
-        return undefined;
+        return {} as Posisjon;
     }
     return await response.json() as Posisjon;
 };
 
 
-export const fetchHistoricVegreferanseFromPosition = async (veglenksekvensId : number, posisjon: number, tidspunkt?: Date) : Promise<VegobjektResponse> => {
+export const fetchPositionByLenkeposisjon = async (veglenksekvensid: number, posisjon: number) : Promise<Posisjon> => {
+
+    const url = baseUrl + "/veg";
+
+    const params = new URLSearchParams({
+        veglenkesekvens: `${posisjon}@${veglenksekvensid}`
+    });
+
+    console.log(`Fetching current road position (vegsystemreferanse) from: ${url}?${params}`);
+
+    const response = await fetch(`${url}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        console.log("Response not ok:", response.status, response.statusText);
+        return {} as Posisjon;
+    }
+    return await response.json() as Posisjon;
+};
+
+
+export const fetchHistoricVegreferanseByPosition = async (veglenksekvensId : number, posisjon: number, tidspunkt?: Date) : Promise<VegobjektResponse> => {
     const url = baseUrl + "/vegobjekter/532";
 
     const params = new URLSearchParams({
