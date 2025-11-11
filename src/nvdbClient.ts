@@ -9,7 +9,7 @@ export const fetchHistoricVegreferanse = async (vegreferanse: Vegreferanse, tids
 
     const params = new URLSearchParams({
         segmentering: "true",
-        inkluder: "egenskaper,lokasjon",
+        inkluder: "egenskaper,lokasjon,metadata",
         ...(tidspunkt
             ? {tidspunkt: tidspunkt.toISOString().slice(0, 10)}
             : {alle_versjoner: "true"}),

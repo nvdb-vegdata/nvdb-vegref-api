@@ -3,27 +3,21 @@ import {MapperClass} from "./MapperClass.ts";
 
 const run = async () => {
     try {
-        let vegsystemreferanse = "ev18S1D1m200";
-        let posisjon = await fetchPosisjon(vegsystemreferanse);
+        let posisjon = await fetchPosisjon("ev18S1D1m200");
         if (posisjon === undefined) {
-            console.log("Fant ingen posisjon for vegsystemreferanse:", vegsystemreferanse);
+            console.log("Fant ingen posisjon for vegsystemreferanse:", "ev18S1D1m200");
         } else {
             console.log("Vegreferanse: " + "   Posisjon:", posisjon.veglenkesekvens.kortform + "   " +  posisjon.vegsystemreferanse.kortform);
 
-            let vegobjektResponsePromise = await fetchHistoricVegreferanseFromPosition(
-                posisjon.veglenkesekvens.veglenkesekvensid,
-                posisjon.veglenkesekvens.relativPosisjon);
-
-            console.log("Vegreferanse: " + vegobjektResponsePromise);
-
-            vegobjektResponsePromise.objekter
+            let vegobjektResponse = await fetchHistoricVegreferanseFromPosition(posisjon.veglenkesekvens.veglenkesekvensid, posisjon.veglenkesekvens.relativPosisjon);
+            vegobjektResponse.objekter
                 .sort((a, b) => new Date(a.metadata.startdato).getTime() - new Date(b.metadata.startdato).getTime())
                 .forEach(objekt => {
                     let vegreferanse = MapperClass.toVegreferanse(objekt);
-                    console.log(`Vegreferanse for objekt id ${objekt.id}`
-                        + ` startdato: ${objekt.metadata.startdato} `
-                        + ` sluttdato: ${objekt.metadata.sluttdato} `
-                        + ` er: ${vegreferanse} `);
+                    console.log(`Objekt id: ${objekt.id},`
+                        + ` startdato: ${objekt.metadata.startdato}, `
+                        + ` sluttdato: ${objekt.metadata.sluttdato}, `
+                        + ` vegreferanse: ${vegreferanse} `);
                 });
 
         }
