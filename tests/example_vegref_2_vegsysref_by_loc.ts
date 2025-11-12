@@ -7,12 +7,12 @@ const run = async () => {
         const service = new VegreferanseService();
         let vegreferanse = Vegreferanse.createFromString("0800ev18hp1m200");
 
-        service.searchForVegreferanse(vegreferanse)
+        service.findVegreferanse(vegreferanse)
             .then(async response => {
                 response.objekter?.forEach(objekt => {
                     const relPos = UtilClass.finnRelativPosisjon(objekt, vegreferanse.meter);
                     if (relPos !== undefined) {
-                        service.fetchVegsystemReferanseByLenkeposisjon(relPos.lokasjon.veglenkesekvensid, relPos.position)
+                        service.findVegsystemReferanseByLenkeposisjon(relPos.lokasjon.veglenkesekvensid, relPos.position)
                             .then(posisjon => {
                                 console.log("Posisjon:", posisjon.veglenkesekvens.kortform + "   " + posisjon.vegsystemreferanse.kortform);
                             });

@@ -125,6 +125,31 @@ export const fetchPositionByLenkeposisjon = async (veglenksekvensid: number, pos
     return await response.json() as Posisjon;
 };
 
+export const fetchPositionByNordOst = async (nord: number, ost: number) : Promise<Posisjon[]> => {
+
+    const url = baseUrl + "/posisjon";
+
+    const params = new URLSearchParams({
+            nord: `${nord}`,
+            ost: `${ost}`
+    });
+
+    console.log(`Fetching  position by nord and ost: ${url}?${params}`);
+
+    const response = await fetch(`${url}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        console.log("Response not ok:", response.status, response.statusText);
+        return {} as Posisjon[];
+    }
+    return await response.json() as Posisjon[];
+};
+
 
 export const fetchHistoricVegreferanseByPosition = async (veglenksekvensId : number, posisjon: number, tidspunkt?: Date) : Promise<VegobjektResponse> => {
     const url = baseUrl + "/vegobjekter/532";

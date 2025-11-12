@@ -5,8 +5,7 @@ import {VegreferanseService} from "../src/vegrefService.ts";
 const run = async () => {
     try {
         const service = new VegreferanseService();
-        let vegreferanse = Vegreferanse.createFromString("0800ev18hp1m200");
-        service.searchForVegreferanse(vegreferanse)
+        service.findVegreferanse(Vegreferanse.createFromString("0800ev18hp1m200"))
             .then(async response => {
                 response.objekter?.forEach(objekt => {
                     let vegref = UtilClass.toVegreferanse(objekt);
