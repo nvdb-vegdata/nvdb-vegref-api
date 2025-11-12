@@ -1,10 +1,11 @@
 import {Vegreferanse} from "./vegreferanse.ts";
 import type {Posisjon, VegobjektResponse} from "./nvdbTypes.ts";
 
-// const baseUrl = "https://nvdbapiles.utv.atlas.vegvesen.no";        // UTV
-// const baseUrl = "https://nvdbapiles.test.atlas.vegvesen.no";       // ATM
-// const baseUrl = "https://nvdbapiles.atlas.vegvesen.no";            // PROD
-const baseUrl = "http://localhost:8080";                           // LOCAL
+let baseUrl = "https://nvdbapiles.atlas.vegvesen.no";    // PROD
+
+export function setNvdbBaseUrl(url: string) {
+    baseUrl = url;
+}
 
 export const fetchHistoricVegreferanse = async (vegreferanse: Vegreferanse, tidspunkt?: Date): Promise<VegobjektResponse> => {
     const url = baseUrl + "/vegobjekter/532";

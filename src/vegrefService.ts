@@ -3,7 +3,9 @@ import {
     fetchHistoricVegreferanse,
     fetchHistoricVegreferanseByPosition,
     fetchPosisjonByVegsystemreferanse,
-    fetchPositionByLenkeposisjon, fetchPositionByNordOst
+    fetchPositionByLenkeposisjon,
+    fetchPositionByNordOst,
+    setNvdbBaseUrl
 } from './nvdbClient.ts';
 import type {Posisjon, VegobjektResponse} from './nvdbTypes.ts';
 
@@ -30,6 +32,10 @@ export class VegreferanseService {
 
     async findPosisjonByNordOst(nord: number, ost: number): Promise<Posisjon[]> {
         return fetchPositionByNordOst(nord, ost);
+    }
+
+    async setBaseUrl(baseUrl: string) {
+        setNvdbBaseUrl(baseUrl);
     }
 }
 

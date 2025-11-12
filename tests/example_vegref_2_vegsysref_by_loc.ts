@@ -5,6 +5,7 @@ import {VegreferanseService} from "../src/vegrefService.ts";
 const run = async () => {
     try {
         const service = new VegreferanseService();
+        service.setBaseUrl("http://localhost:8080");
         let vegreferanse = Vegreferanse.createFromString("0800ev18hp1m200");
 
         service.findVegreferanse(vegreferanse)
