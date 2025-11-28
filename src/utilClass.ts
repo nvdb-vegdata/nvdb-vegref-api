@@ -86,6 +86,16 @@ export class UtilClass {
                 stedfesting.sluttposisjon,
                 currentMeter);
 
+
+            // if (vegobjekt.lokasjon.stedfestinger.length > 0) {
+            //     const stedfesting = vegobjekt.lokasjon.stedfestinger[0];
+            //     if (stedfesting?.retning === "MOT") {
+            //         Juster posisjonen for retning MOT
+            // const justertPosition = stedfesting?.sluttposisjon || 1  - (position - stedfesting?.startposisjon || 0);
+            // return {position: justertPosition, lokasjon: stedfesting};
+            // }
+            // }
+
             return {position, lokasjon: stedfesting};
         }
     }
