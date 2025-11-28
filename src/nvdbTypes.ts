@@ -69,7 +69,7 @@ export type VegobjektMetadata = {
     sluttdato: string | null;
 }
 
-export type Vegobjekt = {
+export type HistoricVegobjekt = {
     id: number;
     href: string;
     metadata: VegobjektMetadata;
@@ -83,9 +83,21 @@ export type Metadata = {
     side: number;
     antallSider: number;
 }
-export type VegobjektResponse = {
-    objekter: Vegobjekt[];
-    metadata: Metadata;
+export type HistoricVegobjektResponse = {
+    objekter: HistoricVegobjekt[];
+    metadata?: Metadata;
+};
+
+export type VegrefAndVegsystemreferanse = {
+    vegreferanse: string;
+    fraDato: string;
+    tilDato: string | null;
+    veglenkeposisjon: string;
+    veglenkeid: number;
+    relativPosisjon: string;
+    beregnetVegreferanse: string;
+    koordinat: string;
+    vegsystemreferanse?: string;
 };
 
 

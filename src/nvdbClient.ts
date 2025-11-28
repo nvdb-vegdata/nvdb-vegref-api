@@ -1,5 +1,5 @@
-import {Vegreferanse} from "./vegreferanse.ts";
-import type {Posisjon, VegobjektResponse} from "./nvdbTypes.ts";
+import type {Posisjon, HistoricVegobjektResponse} from "./nvdbTypes.ts";
+import type {Vegreferanse} from "./vegreferanse.js";
 
 let baseUrl = "https://nvdbapiles.atlas.vegvesen.no";    // PROD
 
@@ -7,11 +7,12 @@ export function setNvdbBaseUrl(url: string) {
     baseUrl = url;
 }
 
-export const fetchHistoricVegreferanse = async (vegreferanse: Vegreferanse, tidspunkt?: Date): Promise<VegobjektResponse> => {
+export const fetchHistoricVegreferanse = async (vegreferanse: Vegreferanse, tidspunkt?: Date): Promise<HistoricVegobjektResponse> => {
     const url = baseUrl + "/vegobjekter/532";
 
     const params = new URLSearchParams({
         segmentering: "true",
+        inkludergeometri: "ingen",
         inkluder: "egenskaper,lokasjon,metadata",
         ...(tidspunkt
             ? {tidspunkt: tidspunkt.toISOString().slice(0, 10)}
@@ -46,10 +47,10 @@ export const fetchHistoricVegreferanse = async (vegreferanse: Vegreferanse, tids
                 side: 0,
                 antallSider: 0
             },
-        } as VegobjektResponse;
+        } as HistoricVegobjektResponse;
     }
 
-    return await response.json() as VegobjektResponse;
+    return await response.json() as HistoricVegobjektResponse;
 };
 
 export const fetchVegsystemReferanse = async (veglenkesekvensid: number, position: number) => {
@@ -77,12 +78,13 @@ export const fetchVegsystemReferanse = async (veglenkesekvensid: number, positio
 };
 
 
-export const fetchPosisjonByVegsystemreferanse = async (vegsystemreferanse: String) : Promise<Posisjon> => {
+export const fetchPosisjonByVegsystemreferanse = async (vegsystemreferanse: String, tidspunkt?: Date) : Promise<Posisjon> => {
 
     const url = baseUrl + "/veg";
 
     const params = new URLSearchParams({
-        vegsystemreferanse: `${vegsystemreferanse}`
+        vegsystemreferanse: `${vegsystemreferanse}`,
+        ...(tidspunkt ? {tidspunkt: tidspunkt.toISOString().slice(0, 10)} : {})
     });
 
     console.log(`Fetching current road position (vegsystemreferanse) from: ${url}?${params}`);
@@ -102,12 +104,13 @@ export const fetchPosisjonByVegsystemreferanse = async (vegsystemreferanse: Stri
 };
 
 
-export const fetchPositionByLenkeposisjon = async (veglenksekvensid: number, posisjon: number) : Promise<Posisjon> => {
+export const fetchPositionByLenkeposisjon = async (veglenksekvensid: number, posisjon: number, tidspunkt?: Date) : Promise<Posisjon> => {
 
     const url = baseUrl + "/veg";
 
     const params = new URLSearchParams({
-        veglenkesekvens: `${posisjon}@${veglenksekvensid}`
+        veglenkesekvens: `${posisjon}@${veglenksekvensid}`,
+        ...(tidspunkt ? {tidspunkt: tidspunkt.toISOString().slice(0, 10)} : {})
     });
 
     console.log(`Fetching current road position (vegsystemreferanse) from: ${url}?${params}`);
@@ -126,13 +129,15 @@ export const fetchPositionByLenkeposisjon = async (veglenksekvensid: number, pos
     return await response.json() as Posisjon;
 };
 
-export const fetchPositionByNordOst = async (nord: number, ost: number) : Promise<Posisjon[]> => {
+export const fetchPositionByNordOst = async (nord: number, ost: number, tidspunkt?: Date) : Promise<Posisjon[]> => {
 
     const url = baseUrl + "/posisjon";
 
     const params = new URLSearchParams({
-            nord: `${nord}`,
-            ost: `${ost}`
+        nord: `${nord}`,
+        ost: `${ost}`,
+        ...(tidspunkt ? {tidspunkt: tidspunkt.toISOString().slice(0, 10)} : {})
+
     });
 
     console.log(`Fetching  position by nord and ost: ${url}?${params}`);
@@ -152,7 +157,7 @@ export const fetchPositionByNordOst = async (nord: number, ost: number) : Promis
 };
 
 
-export const fetchHistoricVegreferanseByPosition = async (veglenksekvensId : number, posisjon: number, tidspunkt?: Date) : Promise<VegobjektResponse> => {
+export const fetchHistoricVegreferanseByPosition = async (veglenksekvensId : number, posisjon: number, tidspunkt?: Date) : Promise<HistoricVegobjektResponse> => {
     const url = baseUrl + "/vegobjekter/532";
 
     const params = new URLSearchParams({
@@ -176,5 +181,5 @@ export const fetchHistoricVegreferanseByPosition = async (veglenksekvensId : num
     if (!response.ok) {
         console.log("Response not ok:", response.status, response.statusText);
     }
-    return await response.json() as VegobjektResponse;
+    return await response.json() as HistoricVegobjektResponse;
 }
