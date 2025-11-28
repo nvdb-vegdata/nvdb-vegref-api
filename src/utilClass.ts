@@ -70,7 +70,7 @@ export class UtilClass {
      * @param currentMeter Meterverdien det skal beregnes relativ posisjon for.
      * @returns Et objekt med `position` og `lokasjon`, eller `undefined` hvis data mangler.
      */
-    static finnRelativPosisjon(vegobjekt: HistoricVegobjekt, currentMeter: number) {
+    static finnRelativPosisjon(vegobjekt: HistoricVegobjekt, currentMeter: number, ignoreRetning: boolean) {
 
         const fra = vegobjekt.egenskaper.find(e => e.id === 4571);
         const til = vegobjekt.egenskaper.find(e => e.id === 4572);
@@ -87,20 +87,20 @@ export class UtilClass {
                 currentMeter);
 
 
-            // if (vegobjekt.lokasjon.stedfestinger.length > 0) {
-            //     const stedfesting = vegobjekt.lokasjon.stedfestinger[0];
-            //     if (stedfesting?.retning === "MOT") {
-            //         Juster posisjonen for retning MOT
-            // const justertPosition = stedfesting?.sluttposisjon || 1  - (position - stedfesting?.startposisjon || 0);
-            // return {position: justertPosition, lokasjon: stedfesting};
-            // }
-            // }
+            if (vegobjekt.lokasjon.stedfestinger.length > 0) {
+                const stedfesting = vegobjekt.lokasjon.stedfestinger[0];
+                if (!ignoreRetning && stedfesting?.retning === "MOT") {
+                    // Juster posisjonen for retning MOT
+                    const justertPosition = stedfesting?.sluttposisjon || 1 - (position - stedfesting?.startposisjon || 0);
+                    return {position: justertPosition, lokasjon: stedfesting};
+                }
+            }
 
             return {position, lokasjon: stedfesting};
         }
     }
 
-    static finnRelativMeter(vegobjekt: HistoricVegobjekt, relativePosition: number) {
+    static finnRelativMeter(vegobjekt: HistoricVegobjekt, relativePosition: number, ignorerRetning: boolean = false) {
         const fra = vegobjekt.egenskaper.find(e => e.id === 4571);
         const til = vegobjekt.egenskaper.find(e => e.id === 4572);
         const stedfesting = vegobjekt.lokasjon.stedfestinger[0];
@@ -111,7 +111,7 @@ export class UtilClass {
             const startMeter = typeof fra.verdi === "number" ? fra.verdi : 0;
             const endMeter = typeof til.verdi === "number" ? til.verdi : 0;
 
-            if (stedfesting.retning === "MOT") {
+            if (!ignorerRetning && stedfesting.retning === "MOT") {
                 // Juster den relative posisjonen for retning MOT
                 relativePosition = stedfesting.sluttposisjon - (relativePosition - stedfesting.startposisjon);
             }
