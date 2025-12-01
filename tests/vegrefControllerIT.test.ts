@@ -1,5 +1,6 @@
 import {expect, test} from 'bun:test';
 import {VegrefController} from "../src/vegrefController.ts";
+import {Vegreferanse} from "../src/vegreferanse.ts";
 
 var vegrefcontroller = new VegrefController();
 
@@ -97,3 +98,155 @@ test("Verify lookup position east=164956.5264286567 and north=6540946.932919496"
     expect(posisjon[3]?.beregnetVegreferanse).toBe("0800 EV18 hp1 m1000");
     expect(posisjon[3]?.fraDato).toBe("2019-10-10");
 });
+
+
+test("Verify lookup of ev18hp1m0", async () => {
+
+    const posisjon = await vegrefcontroller.findPosisjonerByVegreferanse(Vegreferanse.createFromString("0800ev18hp1m0"));
+    posisjon.sort((a, b) => {
+        if (a.veglenkeid !== b.veglenkeid) {
+            return a.veglenkeid - b.veglenkeid;
+        }
+        const dateA = new Date(a.fraDato).getTime();
+        const dateB = new Date(b.fraDato).getTime();
+        return dateA - dateB;
+    })
+
+    expect(posisjon.length).toBe(12);
+
+    expect(posisjon[0]?.beregnetVegreferanse).toBe( "0800 EV18 hp1 m0");
+    expect(posisjon[0]?.vegsystemreferanse).toBe("FV2962 S2D1 m0");
+    expect(posisjon[0]?.relativPosisjon).toBe(0) ;
+    expect(posisjon[0]?.veglenkeid).toBe(521064) ;
+
+    expect(posisjon[1]?.beregnetVegreferanse).toBe( "0800 ET18 hp1 m0");
+    expect(posisjon[1]?.vegsystemreferanse).toBe("FV2962 S2D1 m0");
+    expect(posisjon[1]?.relativPosisjon).toBe(0);
+    expect(posisjon[1]?.veglenkeid).toBe(521064) ;
+
+    expect(posisjon[2]?.beregnetVegreferanse).toBe( "0800 FV30 hp1 m0");
+    expect(posisjon[2]?.vegsystemreferanse).toBe("FV2962 S2D1 m0");
+    expect(posisjon[2]?.relativPosisjon).toBe(0);
+    expect(posisjon[2]?.veglenkeid).toBe(521064) ;
+
+    expect(posisjon[3]?.beregnetVegreferanse).toBe( "0800 FV30 hp1 m0");
+    expect(posisjon[3]?.vegsystemreferanse).toBe("FV2962 S2D1 m0");
+    expect(posisjon[3]?.relativPosisjon).toBe(0);
+    expect(posisjon[3]?.veglenkeid).toBe(521064) ;
+
+    expect(posisjon[4]?.beregnetVegreferanse).toBe( "0800 FV2962 hp2 m0");
+    expect(posisjon[4]?.vegsystemreferanse).toBe("FV2962 S2D1 m0");
+    expect(posisjon[4]?.relativPosisjon).toBe(0);
+    expect(posisjon[4]?.veglenkeid).toBe(521064) ;
+
+    expect(posisjon[5]?.beregnetVegreferanse).toBe( "0800 EV18 hp9 m7235");
+    expect(posisjon[5]?.vegsystemreferanse).toBe("EV18 S22D1 m0");
+    expect(posisjon[5]?.relativPosisjon).toBe(1);
+    expect(posisjon[5]?.veglenkeid).toBe(521066) ;
+
+    expect(posisjon[6]?.beregnetVegreferanse).toBe( "0800 EV18 hp9 m7235");
+    expect(posisjon[6]?.vegsystemreferanse).toBe("EV18 S22D1 m0");
+    expect(posisjon[6]?.relativPosisjon).toBe(1);
+    expect(posisjon[6]?.veglenkeid).toBe(521066) ;
+
+    expect(posisjon[7]?.beregnetVegreferanse).toBe( "0800 EV18 hp9 m7237");
+    expect(posisjon[7]?.vegsystemreferanse).toBe("EV18 S22D1 m0");
+    expect(posisjon[7]?.relativPosisjon).toBe(1);
+    expect(posisjon[7]?.veglenkeid).toBe(521066) ;
+
+    expect(posisjon[8]?.beregnetVegreferanse).toBe( "0800 EV18 hp1 m0");
+    expect(posisjon[8]?.vegsystemreferanse).toBe("EV18 S22D1 m0");
+    expect(posisjon[8]?.relativPosisjon).toBe(1);
+    expect(posisjon[8]?.veglenkeid).toBe(521066) ;
+
+    expect(posisjon[9]?.beregnetVegreferanse).toBe( "0800 EA18 hp1 m0");
+    expect(posisjon[9]?.vegsystemreferanse).toBe("EV18 S28D1 m10243");
+    expect(posisjon[9]?.relativPosisjon).toBe(0);
+    expect(posisjon[9]?.veglenkeid).toBe(2014346) ;
+
+    expect(posisjon[10]?.beregnetVegreferanse).toBe( "0800 EV18 hp1 m0");
+    expect(posisjon[10]?.vegsystemreferanse).toBe("EV18 S28D1 m10243");
+    expect(posisjon[10]?.relativPosisjon).toBe(0);
+    expect(posisjon[10]?.veglenkeid).toBe(2014346) ;
+
+    expect(posisjon[11]?.beregnetVegreferanse).toBe( "0800 EV18 hp9 m10240");
+    expect(posisjon[11]?.vegsystemreferanse).toBe("EV18 S28D1 m10243");
+    expect(posisjon[11]?.relativPosisjon).toBe(0);
+    expect(posisjon[11]?.veglenkeid).toBe(2014346) ;
+},  { timeout: 15000 })
+
+
+test("Verify lookup of ev18hp1m200", async () => {
+
+    const posisjon = await vegrefcontroller.findPosisjonerByVegreferanse(Vegreferanse.createFromString("0800ev18hp1m200"));
+    posisjon.sort((a, b) => {
+        if (a.veglenkeid !== b.veglenkeid) {
+            return a.veglenkeid - b.veglenkeid;
+        }
+        const dateA = new Date(a.fraDato).getTime();
+        const dateB = new Date(b.fraDato).getTime();
+        return dateA - dateB;
+    })
+
+    expect(posisjon.length).toBe(12);
+
+    expect(posisjon[0]?.beregnetVegreferanse).toBe( "0800 EV18 hp1 m200");
+    expect(posisjon[0]?.vegsystemreferanse).toBe("FV2962 S2D1 m200");
+    expect(posisjon[0]?.relativPosisjon).toBeCloseTo(0.02011, 3) ;
+    expect(posisjon[0]?.veglenkeid).toBe(521064) ;
+
+    expect(posisjon[1]?.beregnetVegreferanse).toBe( "0800 ET18 hp1 m200");
+    expect(posisjon[1]?.vegsystemreferanse).toBe("FV2962 S2D1 m200");
+    expect(posisjon[1]?.relativPosisjon).toBeCloseTo(0.02011, 3) ;
+    expect(posisjon[1]?.veglenkeid).toBe(521064) ;
+
+    expect(posisjon[2]?.beregnetVegreferanse).toBe( "0800 FV30 hp1 m200");
+    expect(posisjon[2]?.vegsystemreferanse).toBe("FV2962 S2D1 m200");
+    expect(posisjon[2]?.relativPosisjon).toBeCloseTo(0.02011, 3) ;
+    expect(posisjon[2]?.veglenkeid).toBe(521064) ;
+
+    expect(posisjon[3]?.beregnetVegreferanse).toBe( "0800 FV30 hp1 m200");
+    expect(posisjon[3]?.vegsystemreferanse).toBe("FV2962 S2D1 m200");
+    expect(posisjon[3]?.relativPosisjon).toBeCloseTo(0.02011, 3) ;
+    expect(posisjon[3]?.veglenkeid).toBe(521064) ;
+
+    expect(posisjon[4]?.beregnetVegreferanse).toBe( "0800 FV2962 hp2 m200");
+    expect(posisjon[4]?.vegsystemreferanse).toBe("FV2962 S2D1 m200");
+    expect(posisjon[4]?.relativPosisjon).toBeCloseTo(0.02011, 3) ;
+    expect(posisjon[4]?.veglenkeid).toBe(521064) ;
+
+    expect(posisjon[5]?.beregnetVegreferanse).toBe( "0800 EV18 hp9 m7235");
+    expect(posisjon[5]?.vegsystemreferanse).toBe("EV18 S22D1 m0");
+    expect(posisjon[5]?.relativPosisjon).toBeCloseTo(0.972, 2);
+    expect(posisjon[5]?.veglenkeid).toBe(521066) ;
+
+    expect(posisjon[6]?.beregnetVegreferanse).toBe( "0800 EV18 hp9 m7235");
+    expect(posisjon[6]?.vegsystemreferanse).toBe("EV18 S22D1 m0");
+    expect(posisjon[6]?.relativPosisjon).toBeCloseTo(0.972, 2);
+    expect(posisjon[6]?.veglenkeid).toBe(521066) ;
+
+    expect(posisjon[7]?.beregnetVegreferanse).toBe( "0800 EV18 hp9 m7237");
+    expect(posisjon[7]?.vegsystemreferanse).toBe("EV18 S22D1 m0");
+    expect(posisjon[7]?.relativPosisjon).toBeCloseTo(0.972, 2);
+    expect(posisjon[7]?.veglenkeid).toBe(521066) ;
+
+    expect(posisjon[8]?.beregnetVegreferanse).toBe( "0800 EV18 hp1 m200");
+    expect(posisjon[8]?.vegsystemreferanse).toBe("EV18 S22D1 m200");
+    expect(posisjon[8]?.relativPosisjon).toBeCloseTo(0.972, 2);
+    expect(posisjon[8]?.veglenkeid).toBe(521066) ;
+
+    expect(posisjon[9]?.beregnetVegreferanse).toBe( "0800 EA18 hp1 m10043");
+    expect(posisjon[9]?.vegsystemreferanse).toBe("EV18 S28D1 m10043");
+    expect(posisjon[9]?.relativPosisjon).toBeCloseTo(0.1075, 4);
+    expect(posisjon[9]?.veglenkeid).toBe(2014346) ;
+
+    expect(posisjon[10]?.beregnetVegreferanse).toBe( "0800 EV18 hp1 m10043");
+    expect(posisjon[10]?.vegsystemreferanse).toBe("EV18 S28D1 m10043");
+    expect(posisjon[10]?.relativPosisjon).toBeCloseTo(0.1075, 4);
+    expect(posisjon[10]?.veglenkeid).toBe(2014346) ;
+
+    expect(posisjon[11]?.beregnetVegreferanse).toBe( "0800 EV18 hp9 m10043");
+    expect(posisjon[11]?.vegsystemreferanse).toBe("EV18 S28D1 m10043");
+    expect(posisjon[11]?.relativPosisjon).toBeCloseTo(0.1075, 4);
+    expect(posisjon[11]?.veglenkeid).toBe(2014346) ;
+},  { timeout: 15000 })
