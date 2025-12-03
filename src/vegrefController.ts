@@ -28,18 +28,17 @@ export class VegrefController {
                 const veglenkeid = stedfesting?.veglenkesekvensid || -1;
                 const startPos = stedfesting?.startposisjon || 0;
                 const sluttPos = stedfesting?.sluttposisjon || 0;
-                const relativPosisjon = UtilClass.finnRelativPosisjon(objekt, vegreferanse.meter, false)?.position;
-                const posisjon = await service.findVegsystemReferanseByLenkeposisjon(veglenkeid, pos || 0);
+                const vegsystemreferanse = await service.findVegsystemReferanseByLenkeposisjon(veglenkeid, pos);
                 return {
                     vegreferanse: "" + UtilClass.toVegreferanse(feature),
                     fraDato: "" + feature.metadata.startdato,
                     tilDato: "" + feature.metadata.sluttdato,
                     veglenkeposisjon: "" + startPos + "-" + sluttPos + "@" + veglenkeid,
                     veglenkeid : veglenkeid,
-                    relativPosisjon: relativPosisjon,
-                    beregnetVegreferanse: "" + UtilClass.toVegreferanseWithMeter(feature, UtilClass.finnRelativMeter(feature, relativPosisjon || 0, false) || 0),
-                    koordinat: "" + posisjon?.geometri?.wkt,
-                    vegsystemreferanse: "" + posisjon?.vegsystemreferanse?.kortform
+                    relativPosisjon: pos,
+                    beregnetVegreferanse: "" + UtilClass.toVegreferanseWithMeter(feature, UtilClass.finnRelativMeter(feature, pos || 0) || 0),
+                    koordinat: "" + vegsystemreferanse?.geometri?.wkt,
+                    vegsystemreferanse: "" + vegsystemreferanse?.vegsystemreferanse?.kortform
                 };
             }));
         });

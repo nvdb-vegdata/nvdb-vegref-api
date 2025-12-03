@@ -91,7 +91,7 @@ export class UtilClass {
                 const stedfesting = vegobjekt.lokasjon.stedfestinger[0];
                 if (!ignoreRetning && stedfesting?.retning === "MOT") {
                     // Juster posisjonen for retning MOT
-                    const justertPosition = stedfesting?.sluttposisjon || 1 - (position - stedfesting?.startposisjon || 0);
+                    const justertPosition = stedfesting?.sluttposisjon - position;
                     return {position: justertPosition, lokasjon: stedfesting};
                 }
             }
