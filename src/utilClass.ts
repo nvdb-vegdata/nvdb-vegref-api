@@ -1,5 +1,5 @@
-import type {Vegobjekt} from "./nvdbTypes.ts";
-import {Vegkategori, Vegstatus} from "./vegreferanse.ts";
+import type {HistoricVegobjekt, Posisjon} from "./nvdbTypes.ts";
+import {Vegkategori, Vegstatus} from "./vegreferanse.js";
 
 export class UtilClass {
 
@@ -11,7 +11,7 @@ export class UtilClass {
      * @param vegobjekt The `Vegobjekt` to convert.
      * @returns A formatted vegreferanse string.
      */
-    static toVegreferanse(vegobjekt: Vegobjekt) : String {
+    static toVegreferanse(vegobjekt: HistoricVegobjekt): String {
         const vegkategori = vegobjekt.egenskaper.find(e => e.id === 4566);
         const vegstatus = vegobjekt.egenskaper.find(e => e.id === 4567);
         const vegnummer = vegobjekt.egenskaper.find(e => e.id === 4568);
@@ -33,6 +33,35 @@ export class UtilClass {
 
 
     /**
+     * Converts a `Vegobjekt` to a formatted vegreferanse string.
+     * Extracts properties such as vegkategori, vegstatus, vegnummer, parsell, fylke, kommune, and meter values.
+     * Returns a string representation combining these values.
+     *
+     * @param vegobjekt The `Vegobjekt` to convert.
+     * @param meter
+     * @returns A formatted vegreferanse string.
+     */
+    static toVegreferanseWithMeter(vegobjekt: HistoricVegobjekt, meter: number): String {
+        const vegkategori = vegobjekt.egenskaper.find(e => e.id === 4566);
+        const vegstatus = vegobjekt.egenskaper.find(e => e.id === 4567);
+        const vegnummer = vegobjekt.egenskaper.find(e => e.id === 4568);
+        const parsell = vegobjekt.egenskaper.find(e => e.id === 4569);
+        const fylke = vegobjekt.egenskaper.find(e => e.id === 4591);
+        const kommune = vegobjekt.egenskaper.find(e => e.id === 4592);
+
+
+        return ""
+            + fylke?.verdi?.toString().padStart(2, "0")
+            + kommune?.verdi?.toString().padStart(2, "0")
+            + " "
+            + (vegkategori?.enum_id === undefined ? "" : Vegkategori[vegkategori.enum_id])
+            + (vegstatus?.enum_id === undefined ? "" : Vegstatus[vegstatus.enum_id])
+            + vegnummer?.verdi
+            + " hp" + parsell?.verdi + " m" + meter;
+    }
+
+
+    /**
      * Beregner relativ posisjon for et `Vegobjekt` basert på en gitt meterverdi.
      * Finner start- og sluttmeter-egenskapene (id 4571 og 4572) og bruker første stedfesting.
      * Returnerer `undefined` hvis nødvendig data mangler, ellers returneres relativ posisjon og lokasjon.
@@ -41,7 +70,7 @@ export class UtilClass {
      * @param currentMeter Meterverdien det skal beregnes relativ posisjon for.
      * @returns Et objekt med `position` og `lokasjon`, eller `undefined` hvis data mangler.
      */
-    static finnRelativPosisjon(vegobjekt: Vegobjekt, currentMeter: number) {
+    static finnRelativPosisjon(vegobjekt: HistoricVegobjekt, currentMeter: number, ignoreRetning: boolean) {
 
         const fra = vegobjekt.egenskaper.find(e => e.id === 4571);
         const til = vegobjekt.egenskaper.find(e => e.id === 4572);
@@ -57,7 +86,40 @@ export class UtilClass {
                 stedfesting.sluttposisjon,
                 currentMeter);
 
+
+            if (vegobjekt.lokasjon.stedfestinger.length > 0) {
+                const stedfesting = vegobjekt.lokasjon.stedfestinger[0];
+                if (!ignoreRetning && stedfesting?.retning === "MOT") {
+                    // Juster posisjonen for retning MOT
+                    const justertPosition = stedfesting?.sluttposisjon - position;
+                    return {position: justertPosition, lokasjon: stedfesting};
+                }
+            }
+
             return {position, lokasjon: stedfesting};
+        }
+    }
+
+    static finnRelativMeter(vegobjekt: HistoricVegobjekt, relativePosition: number, ignorerRetning: boolean = false) {
+        const fra = vegobjekt.egenskaper.find(e => e.id === 4571);
+        const til = vegobjekt.egenskaper.find(e => e.id === 4572);
+        const stedfesting = vegobjekt.lokasjon.stedfestinger[0];
+
+        if (!stedfesting || !fra || !til) {
+            return 0;
+        } else {
+            const startMeter = typeof fra.verdi === "number" ? fra.verdi : 0;
+            const endMeter = typeof til.verdi === "number" ? til.verdi : 0;
+
+            if (!ignorerRetning && stedfesting.retning === "MOT") {
+                // Juster den relative posisjonen for retning MOT
+                relativePosition = stedfesting.sluttposisjon - (relativePosition - stedfesting.startposisjon);
+            }
+
+            // Formel for å konvertere relativ posisjon tilbake til meterverdi
+            const meterValue = startMeter + (relativePosition - stedfesting.startposisjon) * (endMeter - startMeter) / (stedfesting.sluttposisjon - stedfesting.startposisjon);
+
+            return Number(meterValue.toFixed(0));
         }
     }
 
@@ -86,11 +148,62 @@ export class UtilClass {
         }
 
         // Formel for omskalering av currentMeter til det nye relative området
-        const customPosition =  Math.abs(relativeStart + (currentMeter - startMeter) * (relativeEnd - relativeStart) / (endMeter - startMeter));
+        const customPosition = Math.abs(relativeStart + (currentMeter - startMeter) * (relativeEnd - relativeStart) / (endMeter - startMeter));
 
         if (customPosition < relativeStart) return relativeStart;
         if (customPosition > relativeEnd) return relativeEnd;
 
         return customPosition;
+    }
+
+    /**
+     * Pads a number with leading zeros to reach a specified maximum length.
+     * @param number
+     * @param maxlength
+     */
+    static padNumber(number: number, maxlength: number) {
+        return number.toString().padStart(maxlength, '0');
+    }
+
+    /**
+     * Formats a number to a string with a specified number of decimal places.
+     * Trailing zeros and decimal points are removed as needed.
+     * If the number is zero, returns "0.0".
+     * @param num
+     * @param decimals
+     */
+    static formatNumber(num: number, decimals: number = 8) {
+        if (num === 0) return "0.0";
+
+        // Round to specified decimals
+        let str = num.toFixed(decimals)
+            .replace(/0+$/, "")   // remove trailing zeros
+            .replace(/\.$/, "");  // remove trailing dot if any
+
+        // If no decimal point remains, add ".0"
+        if (!str.includes(".")) str += ".0";
+
+        return str;
+    }
+
+    /**
+     * Returns a formatted vegsystem reference string with municipality info if applicable.
+     * If the vegsystem category is "E", "R", or "F", only the short form is returned.
+     * Otherwise, the municipality and short form are combined.
+     * @param posisjon The position object containing vegsystemreferanse and kommune.
+     * @returns A formatted string for the vegsystem reference.
+     */
+    static getVegsysrefWithKommune(posisjon: Posisjon): string {
+        if (!posisjon.vegsystemreferanse) {
+            return "Ukjent vegsystemreferanse";
+        }
+        switch (posisjon.vegsystemreferanse.vegsystem.vegkategori) {
+            case "E":
+            case "R":
+            case "F":
+                return "" + posisjon.vegsystemreferanse.kortform;
+            default:
+                return "" + posisjon.kommune + " " + posisjon.vegsystemreferanse.kortform;
+        }
     }
 }
