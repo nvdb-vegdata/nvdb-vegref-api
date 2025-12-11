@@ -1,4 +1,4 @@
-import type {HistoricVegobjekt} from "./nvdbTypes.ts";
+import type {HistoricVegobjekt, Posisjon} from "./nvdbTypes.ts";
 import {Vegkategori, Vegstatus} from "./vegreferanse.js";
 
 export class UtilClass {
@@ -156,11 +156,22 @@ export class UtilClass {
         return customPosition;
     }
 
+    /**
+     * Pads a number with leading zeros to reach a specified maximum length.
+     * @param number
+     * @param maxlength
+     */
     static padNumber(number: number, maxlength: number) {
         return number.toString().padStart(maxlength, '0');
     }
 
-
+    /**
+     * Formats a number to a string with a specified number of decimal places.
+     * Trailing zeros and decimal points are removed as needed.
+     * If the number is zero, returns "0.0".
+     * @param num
+     * @param decimals
+     */
     static formatNumber(num: number, decimals: number = 8) {
         if (num === 0) return "0.0";
 
@@ -173,5 +184,26 @@ export class UtilClass {
         if (!str.includes(".")) str += ".0";
 
         return str;
+    }
+
+    /**
+     * Returns a formatted vegsystem reference string with municipality info if applicable.
+     * If the vegsystem category is "E", "R", or "F", only the short form is returned.
+     * Otherwise, the municipality and short form are combined.
+     * @param posisjon The position object containing vegsystemreferanse and kommune.
+     * @returns A formatted string for the vegsystem reference.
+     */
+    static getVegsysrefWithKommune(posisjon: Posisjon): string {
+        if (!posisjon.vegsystemreferanse) {
+            return "Ukjent vegsystemreferanse";
+        }
+        switch (posisjon.vegsystemreferanse.vegsystem.vegkategori) {
+            case "E":
+            case "R":
+            case "F":
+                return "" + posisjon.vegsystemreferanse.kortform;
+            default:
+                return "" + posisjon.kommune + " " + posisjon.vegsystemreferanse.kortform;
+        }
     }
 }

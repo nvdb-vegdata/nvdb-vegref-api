@@ -7,7 +7,7 @@ var vegrefcontroller = new VegrefController();
 
 test("Verify lookup of ev18hp1m0", async () => {
 
-    const posisjon = await vegrefcontroller.findPosisjonerByVegreferanse(Vegreferanse.createFromString("0800ev18hp1m0"));
+    const posisjon = await vegrefcontroller.findPosisjonerByVegreferanserAdvanced(Vegreferanse.createFromString("0800ev18hp1m0"));
     posisjon.sort((a, b) => {
         if (a.veglenkeid !== b.veglenkeid) {
             return a.veglenkeid - b.veglenkeid;

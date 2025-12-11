@@ -1,8 +1,13 @@
 import type {Posisjon, HistoricVegobjektResponse} from "./nvdbTypes.ts";
 import type {Vegreferanse} from "./vegreferanse.js";
 
+// Default to production NVDB API URL
 let baseUrl = "https://nvdbapiles.atlas.vegvesen.no";    // PROD
 
+// Headers for NVDB API requests
+const NVDB_HEADERS = {"Accept": "application/json", "X-Client": "nvdb-vegref-api-client"};
+
+// Function to set a custom base URL for NVDB API
 export function setNvdbBaseUrl(url: string) {
     baseUrl = url;
 }
@@ -11,7 +16,6 @@ export const fetchHistoricVegreferanse = async (vegreferanse: Vegreferanse, tids
     const url = baseUrl + "/vegobjekter/532";
 
     const params = new URLSearchParams({
-        segmentering: "true",
         inkludergeometri: "ingen",
         inkluder: "egenskaper,lokasjon,metadata",
         ...(tidspunkt
@@ -32,9 +36,8 @@ export const fetchHistoricVegreferanse = async (vegreferanse: Vegreferanse, tids
 
     const response = await fetch(`${url}?${params.toString()}`, {
         method: "GET",
-        headers: {
-            "Accept": "application/json"
-        }
+        mode: 'cors',
+        headers: NVDB_HEADERS
     });
 
     if (!response.ok) {
@@ -65,9 +68,8 @@ export const fetchVegsystemReferanse = async (veglenkesekvensid: number, positio
 
     const response = await fetch(`${url}?${params.toString()}`, {
         method: "GET",
-        headers: {
-            "Accept": "application/json"
-        }
+        mode: 'cors',
+        headers: NVDB_HEADERS
     });
 
     if (!response.ok) {
@@ -91,9 +93,8 @@ export const fetchPosisjonByVegsystemreferanse = async (vegsystemreferanse: Stri
 
     const response = await fetch(`${url}?${params.toString()}`, {
         method: "GET",
-        headers: {
-            "Accept": "application/json"
-        }
+        mode: 'cors',
+        headers: NVDB_HEADERS
     });
 
     if (!response.ok) {
@@ -117,9 +118,8 @@ export const fetchPositionByLenkeposisjon = async (veglenksekvensid: number, pos
 
     const response = await fetch(`${url}?${params.toString()}`, {
         method: "GET",
-        headers: {
-            "Accept": "application/json"
-        }
+        mode: 'cors',
+        headers: NVDB_HEADERS
     });
 
     if (!response.ok) {
@@ -144,9 +144,8 @@ export const fetchPositionByNordOst = async (nord: number, ost: number, tidspunk
 
     const response = await fetch(`${url}?${params.toString()}`, {
         method: "GET",
-        headers: {
-            "Accept": "application/json"
-        }
+        mode: 'cors',
+        headers: NVDB_HEADERS
     });
 
     if (!response.ok) {
@@ -173,9 +172,8 @@ export const fetchHistoricVegreferanseByPosition = async (veglenksekvensId : num
 
     const response = await fetch(`${url}?${params.toString()}`, {
         method: "GET",
-        headers: {
-            "Accept": "application/json"
-        }
+        mode: 'cors',
+        headers: NVDB_HEADERS
     });
 
     if (!response.ok) {

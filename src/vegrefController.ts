@@ -4,11 +4,40 @@ import {VegreferanseService} from "./vegrefService.js";
 import type {VegrefAndVegsystemreferanse} from "./nvdbTypes.js";
 
 const service = new VegreferanseService();
+// service.setBaseUrl("https://nvdbapiles.test.atlas.vegvesen.no/");
 
 /**
  * Controller for handling operations related to Vegreferanse and Vegsystemreferanse.
  */
 export class VegrefController {
+
+    /**
+     * Finds positions by a given Vegreferanse in a simplified way.
+     * Returns an array of objects with vegreferanse, dates, position info, coordinates, and system reference.
+     * @param vegreferanse - The Vegreferanse object to search for.
+     * @param tidspunkt - Optional timestamp for historic lookup.
+     * @returns Promise resolving to an array of position and reference objects.
+     */
+    async findPosisjonerByVegreferanse(vegreferanse: Vegreferanse, tidspunkt?: Date) {
+        const historicVegobjekter = await service.findVegreferanse(vegreferanse, tidspunkt);
+        var map = historicVegobjekter.objekter.map(async objekt => {
+            const lenkeid = objekt.lokasjon.stedfestinger[0]?.veglenkesekvensid || -1;
+            const pos = UtilClass.finnRelativPosisjon(objekt, vegreferanse.meter, false)?.position || 0;
+            const vegsystemreferanse = await service.findVegsystemReferanseByLenkeposisjon(lenkeid, pos, tidspunkt);
+            return {
+                vegreferanse: "" + UtilClass.toVegreferanse(objekt),
+                fraDato: "" + objekt.metadata.startdato,
+                tilDato: "" + objekt.metadata.sluttdato,
+                veglenkeposisjon: "" + objekt.lokasjon.stedfestinger[0]?.startposisjon + "-" + objekt.lokasjon.stedfestinger[0]?.sluttposisjon + "@" + lenkeid,
+                veglenkeid: lenkeid,
+                relativPosisjon: pos,
+                beregnetVegreferanse: "" + UtilClass.toVegreferanseWithMeter(objekt, UtilClass.finnRelativMeter(objekt, pos || 0) || 0),
+                koordinat: "" + vegsystemreferanse.geometri?.wkt,
+                vegsystemreferanse: "" + UtilClass.getVegsysrefWithKommune(vegsystemreferanse)
+            }
+        });
+        return Promise.all(map);
+    }
 
     /**
      * Finds positions by a given Vegreferanse and optional timestamp.
@@ -17,8 +46,7 @@ export class VegrefController {
      * @param tidspunkt - Optional timestamp for historic lookup.
      * @returns Promise resolving to an array of position and reference objects.
      */
-    async findPosisjonerByVegreferanse(vegreferanse: Vegreferanse, tidspunkt?: Date) {
-
+    async findPosisjonerByVegreferanserAdvanced(vegreferanse: Vegreferanse, tidspunkt?: Date) {
         const promises = (await service.findVegreferanse(vegreferanse, tidspunkt)).objekter.map(async objekt => {
             const lenkeid = objekt.lokasjon.stedfestinger[0]?.veglenkesekvensid || -1;
             const pos = UtilClass.finnRelativPosisjon(objekt, vegreferanse.meter, false)?.position || 0;
@@ -28,17 +56,17 @@ export class VegrefController {
                 const veglenkeid = stedfesting?.veglenkesekvensid || -1;
                 const startPos = stedfesting?.startposisjon || 0;
                 const sluttPos = stedfesting?.sluttposisjon || 0;
-                const vegsystemreferanse = await service.findVegsystemReferanseByLenkeposisjon(veglenkeid, pos);
+                const vegsysrefAtPosition = await service.findVegsystemReferanseByLenkeposisjon(veglenkeid, pos);
                 return {
                     vegreferanse: "" + UtilClass.toVegreferanse(feature),
                     fraDato: "" + feature.metadata.startdato,
                     tilDato: "" + feature.metadata.sluttdato,
                     veglenkeposisjon: "" + startPos + "-" + sluttPos + "@" + veglenkeid,
-                    veglenkeid : veglenkeid,
+                    veglenkeid: veglenkeid,
                     relativPosisjon: pos,
                     beregnetVegreferanse: "" + UtilClass.toVegreferanseWithMeter(feature, UtilClass.finnRelativMeter(feature, pos || 0) || 0),
-                    koordinat: "" + vegsystemreferanse?.geometri?.wkt,
-                    vegsystemreferanse: "" + vegsystemreferanse?.vegsystemreferanse?.kortform
+                    koordinat: "" + vegsysrefAtPosition?.geometri?.wkt,
+                    vegsystemreferanse: "" + UtilClass.getVegsysrefWithKommune(vegsysrefAtPosition)
                 };
             }));
         });
@@ -46,14 +74,14 @@ export class VegrefController {
     }
 
     /**
-     * Finds positions by a given road system reference (`vegreferanse`) and optional timestamp.
+     * Finds positions by a given road system reference (`vegsystemreferanse`) and optional timestamp.
      * Returns an array of objects containing road reference, dates, position info, coordinates, and system reference.
-     * @param vegreferanse - The road system reference to search for.
+     * @param vegsystemreferanse - The road system reference to search for.
      * @param tidspunkt - Optional date for historical lookup.
      * @returns Promise resolving to an array of position and reference objects.
      */
-    async findPosisjonerByVegsystemreferanse(vegreferanse: String, tidspunkt?: Date): Promise<VegrefAndVegsystemreferanse[]> {
-        var posisjon = await service.findPosisjonForVegsystemreferanse(vegreferanse, tidspunkt);
+    async findPosisjonerByVegsystemreferanse(vegsystemreferanse: String, tidspunkt?: Date): Promise<VegrefAndVegsystemreferanse[]> {
+        var posisjon = await service.findPosisjonForVegsystemreferanse(vegsystemreferanse, tidspunkt);
 
         if (!posisjon.veglenkesekvens) {
             return []; // Return empty list if no link sequence found
@@ -61,8 +89,6 @@ export class VegrefController {
         const veglenkeid = posisjon.veglenkesekvens.veglenkesekvensid;
         const relativPosisjon = posisjon.veglenkesekvens.relativPosisjon;
         const posisjonVegref = await service.findHistoricVegreferanseByLenkeposisjon(veglenkeid, relativPosisjon, tidspunkt);
-
-
         const promises = posisjonVegref.objekter.map(feature => {
             var stedfesting = feature.lokasjon.stedfestinger[0];
             const veglenkeid = stedfesting?.veglenkesekvensid || -1;
@@ -77,7 +103,7 @@ export class VegrefController {
                 relativPosisjon: startPos,
                 beregnetVegreferanse: "" + UtilClass.toVegreferanseWithMeter(feature, UtilClass.finnRelativMeter(feature, relativPosisjon || 0) || 0),
                 koordinat: "" + posisjon.geometri.wkt,
-                vegsystemreferanse: "" + posisjon.vegsystemreferanse.kortform
+                vegsystemreferanse: "" + UtilClass.getVegsysrefWithKommune(posisjon)
             };
         });
         return Promise.all(promises);
@@ -94,7 +120,7 @@ export class VegrefController {
     async findPosisjonerByLenkesekvens(linkid: number, position: number, tidspunkt?: Date): Promise<VegrefAndVegsystemreferanse[]> {
         const promises = (await service.findHistoricVegreferanseByLenkeposisjon(linkid, position, tidspunkt)).objekter.map(async feature => {
             const vegref = UtilClass.toVegreferanse(feature);
-            var stedfesting = feature.lokasjon.stedfestinger[0];
+            const stedfesting = feature.lokasjon.stedfestinger[0];
             const posisjon = await service.findVegsystemReferanseByLenkeposisjon(linkid, position, tidspunkt);
 
             if (!posisjon.veglenkesekvens) {
@@ -109,7 +135,7 @@ export class VegrefController {
                 relativPosisjon: position,
                 beregnetVegreferanse: "" + UtilClass.toVegreferanseWithMeter(feature, UtilClass.finnRelativMeter(feature, position || 0) || 0),
                 koordinat: "" + posisjon.geometri.wkt,
-                vegsystemreferanse: "" + posisjon.vegsystemreferanse.kortform
+                vegsystemreferanse: "" + UtilClass.getVegsysrefWithKommune(posisjon)
             }
         });
         return Promise.all(promises);
@@ -137,7 +163,7 @@ export class VegrefController {
                 if (!posisjonResult.veglenkesekvens) {
                     throw new Error("Veglenkesekvens ikke funnet for lenkeposisjon");
                 }
-                const myResult = {
+                const result = {
                     vegreferanse: "" + vegref,
                     fraDato: "" + objekt.metadata.startdato,
                     tilDato: "" + objekt.metadata.sluttdato,
@@ -146,9 +172,9 @@ export class VegrefController {
                     relativPosisjon: relativPosisjon,
                     beregnetVegreferanse: "" + UtilClass.toVegreferanseWithMeter(objekt, UtilClass.finnRelativMeter(objekt, relativPosisjon || 0) || 0),
                     koordinat: "" + posisjonResult.geometri.wkt,
-                    vegsystemreferanse: "" + posisjonResult.vegsystemreferanse.kortform
+                    vegsystemreferanse: "" + UtilClass.getVegsysrefWithKommune(posisjon)
                 };
-                results.push(myResult);
+                results.push(result);
             }
         }
         return results;
