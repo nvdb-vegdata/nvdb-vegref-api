@@ -48,6 +48,23 @@ test("Verify lookup of 0.97171054113006394@1060716 ", async () => {
     expect(posisjon[2]?.fraDato).toBe("2019-06-19");
 });
 
+test("Verify lookup of 0.2@521064", async () => {
+    const posisjon = await vegrefcontroller.findPosisjonerByLenkesekvens(521064, 0.2);
+    posisjon.sort((a, b) => new Date(a.fraDato).getTime() - new Date(b.fraDato).getTime());
+
+    expect(posisjon.length).toBe(2);
+
+    expect(posisjon[0]?.beregnetVegreferanse).toBe( "0800 EV18 hp1 m1989");
+    expect(posisjon[0]?.fraDato).toBe("1950-01-01");
+    expect(posisjon[0]?.koordinat).toBeEmpty(); // No coordinate info for older data
+
+
+    expect(posisjon[1]?.beregnetVegreferanse).toBe( "0800 ET18 hp1 m1989");
+    expect(posisjon[1]?.fraDato).toBe("2012-06-06");
+    expect(posisjon[1]?.koordinat).toBeEmpty();  // No coordinate info for older data
+
+
+});
 
 test("Verify lookup position east=205060.17 and north=6560102.44", async () => {
     const posisjon = await vegrefcontroller.findPosisjonerByCoordinates(6560102.44, 205060.17);
@@ -98,3 +115,9 @@ test("Verify lookup position east=164956.5264286567 and north=6540946.932919496"
     expect(posisjon[3]?.beregnetVegreferanse).toBe("0800 EV18 hp1 m1000");
     expect(posisjon[3]?.fraDato).toBe("2019-10-10");
 });
+
+test("Verify lookup of ev11111s1d1m0", async () => {
+    const posisjon = await vegrefcontroller.findPosisjonerByVegsystemreferanse("ev11111s1d1m0");
+    expect(posisjon.length).toBe(0);
+},  { timeout: 20000 });
+
