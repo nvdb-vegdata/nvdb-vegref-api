@@ -133,9 +133,10 @@ export const fetchPositionByLenkeposisjon = async (veglenksekvensid: number, pos
         console.log("Vegsystemreferanse not found:", response.status, response.statusText);
         return {} as Posisjon;
     }
+
+    // Handle other errors
     console.log("Response not ok:", response.status, response.statusText);
     throw new Error(`Failed to fetch position by lenkeposisjon: ${response.status} ${response.statusText}`);
-
 };
 
 export const fetchPositionByNordOst = async (nord: number, ost: number, tidspunkt?: Date) : Promise<Posisjon[]> => {
