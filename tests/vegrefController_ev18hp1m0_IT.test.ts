@@ -1,6 +1,7 @@
 import {expect, test} from 'bun:test';
 import {VegrefController} from "../src/vegrefController.ts";
 import {Vegreferanse} from "../src/vegreferanse.ts";
+import {TestUtil} from "./TestUtil.ts";
 
 var vegrefcontroller = new VegrefController();
 
@@ -8,14 +9,7 @@ var vegrefcontroller = new VegrefController();
 test("Verify lookup of ev18hp1m0", async () => {
 
     const posisjon = await vegrefcontroller.findPosisjonerByVegreferanserAdvanced(Vegreferanse.createFromString("0800ev18hp1m0"));
-    posisjon.sort((a, b) => {
-        if (a.veglenkeid !== b.veglenkeid) {
-            return a.veglenkeid - b.veglenkeid;
-        }
-        const dateA = new Date(a.fraDato).getTime();
-        const dateB = new Date(b.fraDato).getTime();
-        return dateA - dateB;
-    })
+    posisjon.sort(TestUtil.sortPosisjonByVeglenkeidAndFraDato);
 
     expect(posisjon.length).toBe(12);
 

@@ -1,6 +1,7 @@
 import {expect, test} from 'bun:test';
 import {VegrefController} from "../src/vegrefController.ts";
 import {Vegreferanse} from "../src/vegreferanse.ts";
+import {TestUtil} from "./TestUtil.ts";
 
 var vegrefcontroller = new VegrefController();
 
@@ -8,14 +9,7 @@ var vegrefcontroller = new VegrefController();
 test("Verify lookup of 0.86004074@521066", async () => {
 
     const posisjon = await vegrefcontroller.findPosisjonerByLenkesekvens(521066, 0.86004074);
-    posisjon.sort((a, b) => {
-        if (a.veglenkeid !== b.veglenkeid) {
-            return a.veglenkeid - b.veglenkeid;
-        }
-        const dateA = new Date(a.fraDato).getTime();
-        const dateB = new Date(b.fraDato).getTime();
-        return dateA - dateB;
-    })
+    posisjon.sort(TestUtil.sortPosisjonByVeglenkeidAndFraDato);
 
     expect(posisjon.length).toBe(4);
 
