@@ -19,7 +19,7 @@ bun install
 To run tests:
 
 ```bash
-cd tests && bun test
+cd src/tests && bun test
 ```
 
 _____

@@ -1,5 +1,5 @@
 import {expect, test} from 'bun:test';
-import {UtilClass} from '../src/utilClass.ts';
+import {UtilClass} from '../utilClass';
 
 
 test('should correctly map the start meter to the relative start position', () => {

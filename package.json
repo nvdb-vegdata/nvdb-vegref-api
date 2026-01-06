@@ -1,7 +1,35 @@
 {
   "name": "nvdb-vegref-api",
-  "module": "index.ts",
   "type": "module",
+  "exports": {
+    "./nvdbTypes": {
+      "import": "./dist/nvdbTypes.js",
+      "types": "./dist/nvdbTypes.d.ts"
+    },
+    "./utilClass": {
+      "import": "./dist/utilClass.js",
+      "types": "./dist/utilClass.d.ts"
+    },
+    "./vegrefController": {
+      "import": "./dist/vegrefController.js",
+      "types": "./dist/vegrefController.d.ts"
+    },
+    "./vegreferanse": {
+      "import": "./dist/vegreferanse.js",
+      "types": "./dist/vegreferanse.d.ts"
+    },
+    ".": {
+      "import": "./dist/nvdbTypes.js",
+      "types": "./dist/nvdbTypes.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --project . --outDir dist --rootDir src",
+    "prepare": "npm run build"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },

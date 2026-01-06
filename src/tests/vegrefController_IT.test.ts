@@ -1,6 +1,6 @@
 import {expect, test} from 'bun:test';
-import {VegrefController} from "../src/vegrefController.ts";
-import {VegreferanseService} from "../src/vegrefService.ts";
+import {VegrefController} from "../vegrefController";
+import {VegreferanseService} from "../vegrefService";
 
 var vegrefcontroller = new VegrefController();
 
