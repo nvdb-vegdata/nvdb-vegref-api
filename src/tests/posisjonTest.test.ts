@@ -1,5 +1,5 @@
 import {expect, test} from 'bun:test';
-import type {Posisjon} from "../src/nvdbTypes.ts";
+import type {Posisjon} from "../nvdbTypes.ts";
 import * as fs from "node:fs";
 
 test("integration with lenkesekvens.json", async () => {

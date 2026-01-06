@@ -1,7 +1,7 @@
 import {expect, test} from 'bun:test';
-import {VegrefController} from "../src/vegrefController.ts";
-import {Vegreferanse} from "../src/vegreferanse.ts";
-import {TestUtil} from "./TestUtil.ts";
+import {VegrefController} from "../vegrefController";
+import {Vegreferanse} from "../vegreferanse";
+import {TestUtil} from "./TestUtil";
 
 var vegrefcontroller = new VegrefController();
 
