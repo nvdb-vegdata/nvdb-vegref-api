@@ -1,6 +1,6 @@
 import {expect, test} from 'bun:test';
-import {Vegreferanse} from "../src/vegreferanse.ts";
-import {UtilClass} from "../src/utilClass.ts";
+import {Vegreferanse} from "../vegreferanse";
+import {UtilClass} from "../utilClass";
 import * as fs from 'fs';
 
 

@@ -1,6 +1,6 @@
 import {test, expect} from 'bun:test';
-import {VegrefController} from "../src/vegrefController.ts";
-import {VegreferanseService} from "../src/vegrefService.ts";
+import {VegrefController} from "../vegrefController";
+import {VegreferanseService} from "../vegrefService";
 
 const vegrefservice = new VegreferanseService();
 vegrefservice.setBaseUrl("https://ugyldigurl.com/vegref/v2");
