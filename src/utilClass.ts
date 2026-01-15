@@ -93,7 +93,7 @@ export class UtilClass {
         } else {
             const position = UtilClass.calculateCustomRelativePosition(
                 typeof fra.verdi === "number" ? fra.verdi : 0,
-                typeof til.verdi === "number" ? til.verdi : 0,
+                typeof til.verdi === "number" ? til.verdi : 1,
                 stedfesting.startposisjon,
                 stedfesting.sluttposisjon,
                 currentMeter);

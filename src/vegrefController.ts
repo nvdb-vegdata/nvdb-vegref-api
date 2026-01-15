@@ -22,7 +22,7 @@ export class VegrefController {
         const historicVegobjekter = await service.findVegreferanse(vegreferanse, tidspunkt);
         var map = historicVegobjekter.objekter.map(async objekt => {
             const lenkeid = objekt.lokasjon.stedfestinger[0]?.veglenkesekvensid || -1;
-            const pos = UtilClass.finnRelativPosisjon(objekt, vegreferanse.meter, false)?.position || 0;
+            const pos = UtilClass.finnRelativPosisjon(objekt, vegreferanse.meter, true)?.position || 0;
             const vegsystemreferanse = await service.findVegsystemReferanseByLenkeposisjon(lenkeid, pos, tidspunkt);
             return {
                 vegreferanse: "" + UtilClass.toVegreferanse(objekt),
@@ -31,7 +31,7 @@ export class VegrefController {
                 veglenkeposisjon: "" + objekt.lokasjon.stedfestinger[0]?.startposisjon + "-" + objekt.lokasjon.stedfestinger[0]?.sluttposisjon + "@" + lenkeid,
                 veglenkeid: lenkeid,
                 relativPosisjon: pos,
-                beregnetVegreferanse: "" + UtilClass.toVegreferanseWithMeter(objekt, UtilClass.finnRelativMeter(objekt, pos || 0) || 0),
+                beregnetVegreferanse: "" + UtilClass.toVegreferanseWithMeter(objekt, UtilClass.finnRelativMeter(objekt, pos, true) || 0),
                 koordinat: "" + vegsystemreferanse.geometri?.wkt,
                 vegsystemreferanse: "" + UtilClass.getVegsysrefWithKommune(vegsystemreferanse)
             }
@@ -64,7 +64,7 @@ export class VegrefController {
                     veglenkeposisjon: "" + startPos + "-" + sluttPos + "@" + veglenkeid,
                     veglenkeid: veglenkeid,
                     relativPosisjon: pos,
-                    beregnetVegreferanse: "" + UtilClass.toVegreferanseWithMeter(feature, UtilClass.finnRelativMeter(feature, pos || 0) || 0),
+                    beregnetVegreferanse: "" + UtilClass.toVegreferanseWithMeter(feature, UtilClass.finnRelativMeter(feature, pos) || 0),
                     koordinat: "" + vegsysrefAtPosition?.geometri?.wkt,
                     vegsystemreferanse: "" + UtilClass.getVegsysrefWithKommune(vegsysrefAtPosition)
                 };
