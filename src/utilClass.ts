@@ -80,6 +80,7 @@ export class UtilClass {
      *
      * @param vegobjekt Vegobjektet det skal beregnes posisjon for.
      * @param currentMeter Meterverdien det skal beregnes relativ posisjon for.
+     * @param ignoreRetning Flagg for å ignorere retningen ved beregning.
      * @returns Et objekt med `position` og `lokasjon`, eller `undefined` hvis data mangler.
      */
     static finnRelativPosisjon(vegobjekt: HistoricVegobjekt, currentMeter: number, ignoreRetning: boolean) {
@@ -93,7 +94,7 @@ export class UtilClass {
         } else {
             const position = UtilClass.calculateCustomRelativePosition(
                 typeof fra.verdi === "number" ? fra.verdi : 0,
-                typeof til.verdi === "number" ? til.verdi : 1,
+                typeof til.verdi === "number" ? til.verdi : 0,
                 stedfesting.startposisjon,
                 stedfesting.sluttposisjon,
                 currentMeter);
@@ -102,8 +103,16 @@ export class UtilClass {
             if (vegobjekt.lokasjon.stedfestinger.length > 0) {
                 const stedfesting = vegobjekt.lokasjon.stedfestinger[0];
                 if (!ignoreRetning && stedfesting?.retning === "MOT") {
-                    // Juster posisjonen for retning MOT
-                    const justertPosition = stedfesting?.sluttposisjon - position;
+                    // Juster posisjon for retning MOT
+                    let justertPosition = stedfesting.sluttposisjon - position;
+                    if (justertPosition < stedfesting.startposisjon) {
+                        justertPosition = stedfesting.startposisjon + Math.abs(position);
+                    } else if (justertPosition > stedfesting.sluttposisjon) {
+                        justertPosition = stedfesting.sluttposisjon;
+                    }
+                    // Sørg for at justertPosition er innenfor gyldig område
+                    justertPosition = Math.max(stedfesting.startposisjon, Math.min(justertPosition, stedfesting.sluttposisjon));
+
                     return {position: justertPosition, lokasjon: stedfesting};
                 }
             }
