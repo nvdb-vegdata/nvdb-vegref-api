@@ -94,7 +94,7 @@ export class UtilClass {
         } else {
             const position = UtilClass.calculateCustomRelativePosition(
                 typeof fra.verdi === "number" ? fra.verdi : 0,
-                typeof til.verdi === "number" ? til.verdi : 1,
+                typeof til.verdi === "number" ? til.verdi : 0,
                 stedfesting.startposisjon,
                 stedfesting.sluttposisjon,
                 currentMeter);
@@ -107,6 +107,8 @@ export class UtilClass {
                     let justertPosition = stedfesting.sluttposisjon - position;
                     if (justertPosition < stedfesting.startposisjon) {
                         justertPosition = stedfesting.startposisjon + Math.abs(position);
+                    } else if (justertPosition > stedfesting.sluttposisjon) {
+                        justertPosition = stedfesting.sluttposisjon - Math.abs(position);
                     }
                     return {position: justertPosition, lokasjon: stedfesting};
                 }
