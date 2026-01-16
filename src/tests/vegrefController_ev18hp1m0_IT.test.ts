@@ -6,7 +6,7 @@ import {TestUtil} from "./TestUtil";
 var vegrefcontroller = new VegrefController();
 
 
-test("Verify lookup of ev18hp1m0", async () => {
+test("Verify lookup of 800 ev18 hp1 m0", async () => {
 
     const posisjon = await vegrefcontroller.findPosisjonerByVegreferanserAdvanced(Vegreferanse.createFromString("0800ev18hp1m0"));
     posisjon.sort(TestUtil.sortPosisjonByVeglenkeidAndFraDato);
@@ -69,19 +69,19 @@ test("Verify lookup of ev18hp1m0", async () => {
     expect(posisjon[8]?.fraDato).toBe("2019-10-10") ;
 
     expect(posisjon[9]?.beregnetVegreferanse).toBe( "0800 EA18 hp1 m0");
-    expect(posisjon[9]?.vegsystemreferanse).toBe("EV18 S28D1 m10243");
+    expect(posisjon[9]?.vegsystemreferanse).toBe("EV18 S28D1 m10396");
     expect(posisjon[9]?.relativPosisjon).toBe(0);
     expect(posisjon[9]?.veglenkeid).toBe(2014346) ;
     expect(posisjon[9]?.fraDato).toBe("2009-08-05");
 
     expect(posisjon[10]?.beregnetVegreferanse).toBe( "0800 EV18 hp1 m0");
-    expect(posisjon[10]?.vegsystemreferanse).toBe("EV18 S28D1 m10243");
+    expect(posisjon[10]?.vegsystemreferanse).toBe("EV18 S28D1 m10396");
     expect(posisjon[10]?.relativPosisjon).toBe(0);
     expect(posisjon[10]?.veglenkeid).toBe(2014346) ;
     expect(posisjon[10]?.fraDato).toBe("2012-06-06");
 
     expect(posisjon[11]?.beregnetVegreferanse).toBe( "0800 EV18 hp9 m10240");
-    expect(posisjon[11]?.vegsystemreferanse).toBe("EV18 S28D1 m10243");
+    expect(posisjon[11]?.vegsystemreferanse).toBe("EV18 S28D1 m10396");
     expect(posisjon[11]?.relativPosisjon).toBe(0);
     expect(posisjon[11]?.veglenkeid).toBe(2014346) ;
     expect(posisjon[11]?.fraDato).toBe("2019-10-10");

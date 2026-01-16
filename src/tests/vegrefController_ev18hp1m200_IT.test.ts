@@ -68,19 +68,19 @@ test("Verify lookup of ev18hp1m200", async () => {
     expect(posisjon[8]?.fraDato).toBe("2019-10-10") ;
 
     expect(posisjon[9]?.beregnetVegreferanse).toBe( "0800 EA18 hp1 m200");
-    expect(posisjon[9]?.vegsystemreferanse).toBe("EV18 S28D1 m10043");
+    expect(posisjon[9]?.vegsystemreferanse).toBe("EV18 S28D1 m10196");
     expect(posisjon[9]?.relativPosisjon).toBeCloseTo(0.1075, 4);
     expect(posisjon[9]?.veglenkeid).toBe(2014346) ;
     expect(posisjon[9]?.fraDato).toBe("2009-08-05");
 
     expect(posisjon[10]?.beregnetVegreferanse).toBe( "0800 EV18 hp1 m200");
-    expect(posisjon[10]?.vegsystemreferanse).toBe("EV18 S28D1 m10043");
+    expect(posisjon[10]?.vegsystemreferanse).toBe("EV18 S28D1 m10196");
     expect(posisjon[10]?.relativPosisjon).toBeCloseTo(0.1075, 4);
     expect(posisjon[10]?.veglenkeid).toBe(2014346) ;
     expect(posisjon[10]?.fraDato).toBe("2012-06-06");
 
     expect(posisjon[11]?.beregnetVegreferanse).toBe( "0800 EV18 hp9 m10040");
-    expect(posisjon[11]?.vegsystemreferanse).toBe("EV18 S28D1 m10043");
+    expect(posisjon[11]?.vegsystemreferanse).toBe("EV18 S28D1 m10196");
     expect(posisjon[11]?.relativPosisjon).toBeCloseTo(0.1075, 4);
     expect(posisjon[11]?.veglenkeid).toBe(2014346) ;
     expect(posisjon[11]?.fraDato).toBe("2019-10-10");
