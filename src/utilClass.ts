@@ -80,6 +80,7 @@ export class UtilClass {
      *
      * @param vegobjekt Vegobjektet det skal beregnes posisjon for.
      * @param currentMeter Meterverdien det skal beregnes relativ posisjon for.
+     * @param ignoreRetning Flagg for å ignorere retningen ved beregning.
      * @returns Et objekt med `position` og `lokasjon`, eller `undefined` hvis data mangler.
      */
     static finnRelativPosisjon(vegobjekt: HistoricVegobjekt, currentMeter: number, ignoreRetning: boolean) {
@@ -103,7 +104,10 @@ export class UtilClass {
                 const stedfesting = vegobjekt.lokasjon.stedfestinger[0];
                 if (!ignoreRetning && stedfesting?.retning === "MOT") {
                     // Juster posisjonen for retning MOT
-                    const justertPosition = stedfesting?.sluttposisjon - position;
+                    let justertPosition = stedfesting.sluttposisjon - position;
+                    if (justertPosition < stedfesting.startposisjon) {
+                        justertPosition = stedfesting.startposisjon + Math.abs(position);
+                    }
                     return {position: justertPosition, lokasjon: stedfesting};
                 }
             }
