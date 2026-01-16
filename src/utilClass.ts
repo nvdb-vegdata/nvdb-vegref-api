@@ -103,13 +103,16 @@ export class UtilClass {
             if (vegobjekt.lokasjon.stedfestinger.length > 0) {
                 const stedfesting = vegobjekt.lokasjon.stedfestinger[0];
                 if (!ignoreRetning && stedfesting?.retning === "MOT") {
-                    // Juster posisjonen for retning MOT
+                    // Juster posisjon for retning MOT
                     let justertPosition = stedfesting.sluttposisjon - position;
                     if (justertPosition < stedfesting.startposisjon) {
                         justertPosition = stedfesting.startposisjon + Math.abs(position);
                     } else if (justertPosition > stedfesting.sluttposisjon) {
-                        justertPosition = stedfesting.sluttposisjon - Math.abs(position);
+                        justertPosition = stedfesting.sluttposisjon;
                     }
+                    // Sørg for at justertPosition er innenfor gyldig område
+                    justertPosition = Math.max(stedfesting.startposisjon, Math.min(justertPosition, stedfesting.sluttposisjon));
+
                     return {position: justertPosition, lokasjon: stedfesting};
                 }
             }
