@@ -106,7 +106,7 @@ export class UtilClass {
                     // Juster posisjon for retning MOT
                     let justertPosition = stedfesting.sluttposisjon - position;
                     if (justertPosition < stedfesting.startposisjon) {
-                        justertPosition = stedfesting.startposisjon + Math.abs(position);
+                        justertPosition = stedfesting.startposisjon + justertPosition;
                     } else if (justertPosition > stedfesting.sluttposisjon) {
                         justertPosition = stedfesting.sluttposisjon;
                     }
