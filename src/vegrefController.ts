@@ -23,7 +23,7 @@ export class VegrefController {
         var map = historicVegobjekter.objekter.map(async objekt => {
             const lenkeid = objekt.lokasjon.stedfestinger[0]?.veglenkesekvensid || -1;
             const pos = UtilClass.finnRelativPosisjon(objekt, vegreferanse.meter, false)?.position || 0;
-            const vegsystemreferanse = await service.findVegsystemReferanseByLenkeposisjon(lenkeid, pos, tidspunkt);
+            const vegsystemreferanse = await service.findVegsystemReferanseByLenkeposisjon(lenkeid, pos);
             return {
                 vegreferanse: "" + UtilClass.toVegreferanse(objekt),
                 fraDato: "" + objekt.metadata.startdato,
@@ -121,7 +121,7 @@ export class VegrefController {
         const promises = (await service.findHistoricVegreferanseByLenkeposisjon(linkid, position, tidspunkt)).objekter.map(async feature => {
             const vegref = UtilClass.toVegreferanse(feature);
             const stedfesting = feature.lokasjon.stedfestinger[0];
-            const posisjon = await service.findVegsystemReferanseByLenkeposisjon(linkid, position, tidspunkt);
+            const posisjon = await service.findVegsystemReferanseByLenkeposisjon(linkid, position);
 
             if (!posisjon.veglenkesekvens) {
                 return {
@@ -182,7 +182,7 @@ export class VegrefController {
                     relativPosisjon: relativPosisjon,
                     beregnetVegreferanse: "" + UtilClass.toVegreferanseWithMeter(objekt, UtilClass.finnRelativMeter(objekt, relativPosisjon || 0) || 0),
                     koordinat: "" + posisjonResult.geometri.wkt,
-                    vegsystemreferanse: "" + UtilClass.getVegsysrefWithKommune(posisjon)
+                    vegsystemreferanse: "" + UtilClass.getVegsysrefWithKommune(posisjonResult)
                 };
                 results.push(result);
             }
